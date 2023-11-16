@@ -1,0 +1,37 @@
+                                                                                               Input |                     Stack |                         Action
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval int ; L[10] int begin main() int |             int M B A D $ |                   Matched: int
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval int ; L[10] int begin main() |            main() B A D $ |                Matched: main()
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval int ; L[10] int begin |               begin A D $ |                 Matched: begin
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval int ; L[10] int |   int L[10] ; F G W X D $ |                   Matched: int
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval int ; L[10] |       L[10] ; F G W X D $ |                 Matched: L[10]
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval int ; |             ; F G W X D $ |                     Matched: ;
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval int | int maxval = L[0] ; G W X D $ |                   Matched: int
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = maxval | maxval = L[0] ; G W X D $ |                Matched: maxval
+$ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] = |        = L[0] ; G W X D $ |                     Matched: =
+  $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; L[0] |          L[0] ; G W X D $ |                  Matched: L[0]
+       $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for ; |               ; G W X D $ |                     Matched: ;
+         $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i for |          for C do W X D $ |                   Matched: for
+             $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = i | i = 1 to n - 1 do W X D $ |                     Matched: i
+               $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 = |   = 1 to n - 1 do W X D $ |                     Matched: =
+                 $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to 1 |     1 to n - 1 do W X D $ |                     Matched: 1
+                   $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n to |       to n - 1 do W X D $ |                    Matched: to
+                      $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - n |          n - 1 do W X D $ |                     Matched: n
+                        $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 - |            - 1 do W X D $ |                     Matched: -
+                          $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do 1 |              1 do W X D $ |                     Matched: 1
+                            $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if do |                do W X D $ |                    Matched: do
+                               $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] if | if L[i] > maxval P Q R X D $ |                    Matched: if
+                                  $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > L[i] | L[i] > maxval P Q R X D $ |                  Matched: L[i]
+                                       $ End ) maxval ( return endfor endif ; L[i] = maxval maxval > |      > maxval P Q R X D $ |                     Matched: >
+                                         $ End ) maxval ( return endfor endif ; L[i] = maxval maxval |        maxval P Q R X D $ |                Matched: maxval
+                                                $ End ) maxval ( return endfor endif ; L[i] = maxval | maxval = L[i] ; Q R X D $ |                Matched: maxval
+                                                       $ End ) maxval ( return endfor endif ; L[i] = |        = L[i] ; Q R X D $ |                     Matched: =
+                                                         $ End ) maxval ( return endfor endif ; L[i] |          L[i] ; Q R X D $ |                  Matched: L[i]
+                                                              $ End ) maxval ( return endfor endif ; |               ; Q R X D $ |                     Matched: ;
+                                                                $ End ) maxval ( return endfor endif |             endif R X D $ |                 Matched: endif
+                                                                      $ End ) maxval ( return endfor |              endfor X D $ |                Matched: endfor
+                                                                             $ End ) maxval ( return |     return ( maxval ) D $ |                Matched: return
+                                                                                    $ End ) maxval ( |            ( maxval ) D $ |                     Matched: (
+                                                                                      $ End ) maxval |              maxval ) D $ |                Matched: maxval
+                                                                                             $ End ) |                     ) D $ |                     Matched: )
+                                                                                               $ End |                     End $ |                   Matched: End
+                                                                                                   $ |                         $ |                          Valid
