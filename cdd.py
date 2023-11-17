@@ -5,31 +5,52 @@ import copy
 
 warnings.filterwarnings("ignore")
 
+# ==============================================================================================
+
+'''
+The function takes a dictionary rulesDiction as input, where keys are non-terminal symbols (left-hand  sides of production rules), and values are lists of right-hand sides for each non-terminal.
+'''
+
 def removeLeftRecursion(rulesDiction):
     store = {}
     for lhs in rulesDiction:
+        # alphaRules will store the rules with left recursion.
+        # betaRules will store the rules without left recursion.
+        # allrhs is the list of right-hand sides for the current non-terminal lhs
         alphaRules = []
         betaRules = []
         allrhs = rulesDiction[lhs]
+
+        # Separate into 2 groups those with left recursion and those without
         for subrhs in allrhs:
             if subrhs[0] == lhs:
                 alphaRules.append(subrhs[1:])
             else:
                 betaRules.append(subrhs)
+
+        ''' If there are rules with left recursion (alphaRules is not empty), it creates a new non-terminal symbol (lhs_) to replace the left-recursive rules. The loop ensures that the new symbol doesn't already exist in the original grammar or in the temporary storage (store).'''
+
         if len(alphaRules) != 0:
             lhs_ = lhs + "'"
             while lhs_ in rulesDiction.keys() or lhs_ in store.keys():
                 lhs_ += "'"
+
+            # For each rule in betaRules, it appends the new non-terminal lhs_ to the end of the rule and updates the original non-terminal's rules with the modified betaRules.
+
             for b in range(0, len(betaRules)):
                 betaRules[b].append(lhs_)
             rulesDiction[lhs] = betaRules
+
             for a in range(0, len(alphaRules)):
                 alphaRules[a].append(lhs_)
             alphaRules.append(['#'])
             store[lhs_] = alphaRules
     for left in store:
+        # Result of left recursion will be stored in temp storage store
         rulesDiction[left] = store[left]
     return rulesDiction
+
+# =================================================================================================
 
 def LeftFactoring(rulesDiction):
     newDict = {}
@@ -60,6 +81,8 @@ def LeftFactoring(rulesDiction):
         for key in tempo_dict:
          newDict[key] = tempo_dict[key]
     return newDict
+
+# ==================================================================================================
 
 def first(rule):
     global rules, nonterm_userdef, term_userdef, diction, firsts
@@ -95,6 +118,8 @@ def first(rule):
                                 newList = fres
                         fres.append('#')
                         return newList
+                
+# ==================================================================================================
 
 def follow(nt):
     global start_symbol, rules, nonterm_userdef, term_userdef, diction, firsts, follows
@@ -136,6 +161,7 @@ def follow(nt):
 
     return list(solset)
 
+# ===================================================================================================
 
 def computeAllFirsts():
     global rules, nonterm_userdef, term_userdef, diction, firsts
@@ -154,7 +180,10 @@ def computeAllFirsts():
         file.write("Rules:\n")
         for y in diction:
             file.write(f"{y} -> {diction[y]}\n") 
+
+    # Remove left recursion
     diction = removeLeftRecursion(diction)
+    # Remove left factoring
     diction = LeftFactoring(diction)
     for y in list(diction.keys()):
         t = set()
@@ -174,7 +203,9 @@ def computeAllFirsts():
     index = 0
     for gg in firsts:
      print(f"first({key_list[index]}) "f"=> {firsts.get(gg)}")
-     index += 1    
+     index += 1   
+
+# ==================================================================================================== 
 
 def computeAllFollows():
     global start_symbol, rules, nonterm_userdef, term_userdef, diction, firsts, follows
@@ -190,7 +221,9 @@ def computeAllFollows():
     index = 0
     for gg in follows:
      print(f"follow({key_list[index]})"f" => {follows[gg]}")
-     index += 1    
+     index += 1 
+
+# ===================================================================================================   
 
 def createParseTable():
     global diction, firsts, follows, term_userdef
@@ -267,9 +300,9 @@ def createParseTable():
         rows = [[ntlist[j]] + y for j, y in enumerate(mat)]
         file.write(tabulate(rows, headers, tablefmt='fancy_grid'))
 
-
     return (mat, grammar_is_LL, terminals)
 
+# =================================================================================================
 
 def validateStringUsingStackBuffer(parsing_table, grammarll1, table_term_list, input_string, term_userdef, start_symbol):
     with open('parsing.txt', 'w') as file:
@@ -311,33 +344,50 @@ def validateStringUsingStackBuffer(parsing_table, grammarll1, table_term_list, i
                     file.write("Invalid String! Unmatched terminal symbols\n")
                     return "Invalid String! Unmatched terminal symbols"
 
+# ==============================================================================================
 sample_input_string = None
 inps = ''
 with open('input.txt', 'r+') as f:
     for line in f.readlines():
         inps += line
 sample_input_string = inps
-arr1 = inps.split()[4]
-id = inps.split()[7]
-arr2 = inps.split()[9]
-arr3 = inps.split()[21]
+arr1 = inps.split()[4] # L[10]
+id = inps.split()[7] # maxval
+arr2 = inps.split()[9] # L[0]
+arr3 = inps.split()[21] # L[i]
+
+# Prints all the tokens
+print("The tokens are:\n")
 print(inps.split())
+with open('tokens.txt','w') as f:
+    for token in inps.split():
+        f.write(token+"\n")
+
+# Checking if the identifier maxval is following the format of a valid identifier
 x = re.search("^[a-zA-Z][a-zA-Z0-9_]*", id)
 if not x:
     print("Invalid identifier")
     exit(1)
+
+# Checking if L[10] is a valid array name or not
 y = re.search("^[a-zA-Z][a-zA-Z0-9_]*[[0-9]+]", arr1)
 if not y:
     print("Invalid array name")
     exit(1)
+
+# Checking if L[0] is a valid array name or not
 z = re.search("^[a-zA-Z][a-zA-Z0-9_]*[[0-9]+]", arr2)
 if not z:
     print("Invalid initialization")
     exit(1)
+
+# Checking if L[i] is a valid array name or not
 zz = re.search("^[a-zA-Z][a-zA-Z0-9_]*[[a-z]+]", arr3)
 if not zz:
     print("Invalid index")
     exit(1)
+
+# Rules for LL(1) grammar
 rules = [
     "S -> T M B A D",
     "T -> int",
@@ -355,17 +405,35 @@ rules = [
     "R -> endfor",
     "X -> return ( " + id + " )"
 ]
+
+# List of non terminals in our grammar
 nonterm_userdef = ['S', 'T', 'M', 'B', 'D', 'A', 'E', 'F', 'K', 'Z', 'G', 'W', 'P', 'Q', 'R', 'X', 'C']
+
+# List of terminals in our grammar
 term_userdef = [id, arr1, arr2, arr3, 'n', 'int', 'main()', 'End', 'for', 'if', 'begin', 'do', 'i', 'to', '(', ')', '+', '-', 'endif', 'endfor', 'return', '>', '=', '1', ',', ';']
+
+# "diction" dictionary is used to store the production rules of a context-free grammar.
 diction = {}
+
+# Dictionary to store the firsts of the productions
 firsts = {}
+
+# Dictionary to store the follows of the productions
 follows = {}
 
+# Call the function to compute all the firsts of the productions
 computeAllFirsts()
+
+# Extracting the stating symbol
 start_symbol = list(diction.keys())[0]
+
+# Call the function to compute the follows of all the productions
 computeAllFollows()
 
+# Call the function to create a parsing table
 (parsing_table, result, tabTerm) = createParseTable()
+
+# Check if the i/p string is not empty
 if sample_input_string != None:
   validity = validateStringUsingStackBuffer(parsing_table, result,
   tabTerm, sample_input_string,term_userdef, start_symbol)
