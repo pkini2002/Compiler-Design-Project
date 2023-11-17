@@ -53,8 +53,10 @@ def removeLeftRecursion(rulesDiction):
 # =================================================================================================
 
 def LeftFactoring(rulesDiction):
+    # This dictionary will store the left-factored grammar rules.
     newDict = {}
     for lhs in rulesDiction:
+        # Group right-hand sides (rhs) based on the first terminal/non-terminal in each:
         allrhs = rulesDiction[lhs]
         temp = dict()
         for subrhs in allrhs:
@@ -62,10 +64,12 @@ def LeftFactoring(rulesDiction):
                 temp[subrhs[0]] = [subrhs]
             else:
                 temp[subrhs[0]].append(subrhs)
+        # Process each group:
         new_rule = []
         tempo_dict = {}
         for term_key in temp:
             allStartingWithTermKey = temp[term_key]
+            # If a group has more than one rule, perform left factoring:
             if len(allStartingWithTermKey) > 1:
                 lhs_ = lhs + "'"
                 while lhs_ in rulesDiction.keys() or lhs_ in tempo_dict.keys():
@@ -75,8 +79,10 @@ def LeftFactoring(rulesDiction):
                 for g in temp[term_key]:
                     ex_rules.append(g[1:])
                 tempo_dict[lhs_] = ex_rules
+            # If a group has only one rule, keep it unchanged:
             else:
                 new_rule.append(allStartingWithTermKey[0])
+        # Update the newDict with the left-factored rules:
         newDict[lhs] = new_rule
         for key in tempo_dict:
          newDict[key] = tempo_dict[key]
@@ -89,8 +95,10 @@ def first(rule):
     if len(rule) != 0 and (rule is not None):
         if rule[0] in term_userdef:
             return rule[0]
-        elif rule[0] == '#':
+        elif rule[0] == '#': # For epsilon
             return '#'
+        
+    # If the first symbol is a non-terminal, recursively calculate the FIRST set for the corresponding  right-hand side rules in the grammar.
     if len(rule) != 0:
             if rule[0] in list(diction.keys()):
                 fres = []
@@ -102,6 +110,11 @@ def first(rule):
                             fres.append(i)
                     else:
                         fres.append(indivRes)
+
+                '''
+                If the FIRST set of the non-terminal contains epsilon ('#'), remove it from the set. If the remaining symbols in the rule can derive epsilon, add epsilon back to the set. 
+                '''
+
                 if '#' not in fres:
                         return fres
                 else:
@@ -123,18 +136,27 @@ def first(rule):
 
 def follow(nt):
     global start_symbol, rules, nonterm_userdef, term_userdef, diction, firsts, follows
+
+    # The solset set will store the symbols in the FOLLOW set for the given non-terminal.
     solset = set()
+
+    # Handling the Start Symbol:
     if nt == start_symbol:
         solset.add('$')
+    
+    # Iterating Over Non-terminals and Production Rules:
     for curNT in diction:
         rhs = diction[curNT]
         for subrule in rhs:
+            # Finding the Occurrences of the Target Non-terminal in a Rule:
             if nt in subrule:
                 while nt in subrule:
                     index_nt = subrule.index(nt)
                     subrule = subrule[index_nt + 1:]
+                    # Handling Symbols Following the Target Non-terminal:
                     if len(subrule) != 0:
                      res = first(subrule)
+                     # Handling Epsilon Transitions in FIRST set
                      if '#' in res:
                         newList = []
                         res.remove('#')
@@ -152,6 +174,7 @@ def follow(nt):
                      if nt != curNT:
                         res = follow(curNT)
 
+                    # Adding Symbols to solset
                     if res is not None:
                             if type(res) is list:
                                 for g in res:
@@ -230,6 +253,7 @@ def createParseTable():
     print("\n")
     print("============================================================================================")
     print("Firsts and Follow Result table")
+    # Printing FIRST and FOLLOW Sets
     mx_len_first = 0
     mx_len_fol = 0
     for u in diction:
@@ -260,6 +284,8 @@ def createParseTable():
             row.append('')
         mat.append(row)
     grammar_is_LL = True
+
+    # Filling in the Parsing Table:
     for lhs in diction:
         rhs = diction[lhs]
         for y in rhs:
@@ -317,11 +343,16 @@ def validateStringUsingStackBuffer(parsing_table, grammarll1, table_term_list, i
         input_string = input_string.split()
         input_string.reverse()
         buffer = ['$'] + input_string
+
+        # Writing Header for Parsing Steps:
         file.write("{:>70} {:>10} {:>20}\n".format("Input\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", "Stack\t\t", "Action"))
         while True:
+            # Checking for Valid End Condition:
             if stack == ['$'] and buffer == ['$']:
                 file.write("{:>100} | {:>25} | {:>30}\n".format(' '.join(buffer), ' '.join(stack), "Valid"))
                 return "Valid String!"
+            
+            # Parsing Non-terminals:
             elif stack[0] not in term_userdef:
                 x = list(diction.keys()).index(stack[0])
                 y = table_term_list.index(buffer[-1])
@@ -335,6 +366,8 @@ def validateStringUsingStackBuffer(parsing_table, grammarll1, table_term_list, i
                 else:
                     file.write(f"Invalid String! No rule at Table[{stack[0]}][{buffer[-1]}]\n")
                     return "Invalid String! No rule at Table[{stack[0]}][{buffer[-1]}]"
+                
+            # Matching Terminals:
             else:
                 if stack[0] == buffer[-1]:
                     file.write("{:>100} | {:>25} | {:>30}\n".format(' '.join(buffer), ' '.join(stack), f"Matched1:{stack[0]}"))
