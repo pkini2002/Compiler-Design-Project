@@ -5,7 +5,7 @@ int
 L[10]
 ;
 int
-maxv
+maxval
 =
 L[0]
 ;
